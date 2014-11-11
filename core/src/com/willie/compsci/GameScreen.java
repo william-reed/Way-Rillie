@@ -14,12 +14,25 @@ public class GameScreen implements Screen {
 
 	public GameScreen(Game game) {
 		this.game = game;
+		
+		//create camera and spritebatch
+	}
+	
+	public void update(float delta) {
+		//update all the stuffs
+	}
+	
+	public void draw() {
+		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		
+		//draw all the stuffs
 	}
 
 	@Override
 	public void render(float delta) {
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		update(delta);
+		draw();
 	}
 
 	@Override
