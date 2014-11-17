@@ -6,8 +6,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
 /**
+ * Represents a textured button
  * @author William Reed
- * Last Edited: 11/28/13 11:30 A.M.
+ * @since 11/28/13 11:30 A.M.
  */
 public class Button {
 	
