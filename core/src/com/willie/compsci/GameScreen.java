@@ -14,7 +14,7 @@ public class GameScreen implements Screen {
 
 	public GameScreen(Game game) {
 		this.game = game;
-		
+		Character duck = new Character(64, 64, 0, 0, 10, null)
 		//create camera and spritebatch
 	}
 	
