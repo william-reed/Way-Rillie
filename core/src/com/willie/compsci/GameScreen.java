@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
 
 /**
  * The actual game screen
@@ -20,10 +19,10 @@ public class GameScreen implements Screen {
 	private Game game;
 	private SpriteBatch batch;
 	private OrthographicCamera camera;
-	private HashMap<String, Integer> player1Controls, player2Controls;
+	private HashMap<KeyboardMovement, Integer> player1Controls, player2Controls;
 	private Character duck, mojo;
 	private Character[] characters;
-	private final float WALK_SPEED;
+	private final int WALK_SPEED;
 
 	public GameScreen(Game game) {
 		this.game = game;
@@ -31,15 +30,15 @@ public class GameScreen implements Screen {
 		float h = Gdx.graphics.getHeight();
 		
 		//define controls (use yaml or something for this later?)
-		player1Controls = new HashMap<String, Integer>();
-		player1Controls.put("left", Keys.A);
-		player1Controls.put("right", Keys.D);
-		player1Controls.put("jump", Keys.W);
+		player1Controls = new HashMap<KeyboardMovement, Integer>();
+		player1Controls.put(KeyboardMovement.LEFT, Keys.A);
+		player1Controls.put(KeyboardMovement.RIGHT, Keys.D);
+		player1Controls.put(KeyboardMovement.JUMP, Keys.W);
 		
-		player2Controls = new HashMap<String, Integer>();
-		player2Controls.put("left", Keys.LEFT);
-		player2Controls.put("right", Keys.RIGHT);
-		player2Controls.put("jump", Keys.UP);
+		player2Controls = new HashMap<KeyboardMovement, Integer>();
+		player2Controls.put(KeyboardMovement.LEFT, Keys.LEFT);
+		player2Controls.put(KeyboardMovement.RIGHT, Keys.RIGHT);
+		player2Controls.put(KeyboardMovement.JUMP, Keys.UP);
 		
 		//create characters at opposite ends of screen
 		duck = new Character(64, 64, 0, 0, 10, new Texture("red.png"), player1Controls);
@@ -83,10 +82,10 @@ public class GameScreen implements Screen {
 		//TODO: player collision
 		for (Character c : characters)
 		{
-			if (Gdx.input.isKeyPressed(c.getControl("left")) && c.canMoveLeft())
-				c.setX(c.getX()-WALK_SPEED);
-			if (Gdx.input.isKeyPressed(c.getControl("right")) && c.canMoveRight())
-				c.setX(c.getX()+WALK_SPEED);
+			if (Gdx.input.isKeyPressed(c.getControl(KeyboardMovement.LEFT)) && c.canMoveLeft())
+				c.setX(c.getX() - WALK_SPEED);
+			if (Gdx.input.isKeyPressed(c.getControl(KeyboardMovement.RIGHT)) && c.canMoveRight())
+				c.setX(c.getX() + WALK_SPEED);
 		}
 	}
 

@@ -4,21 +4,21 @@ import java.util.HashMap;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 
-public class Character
-{
+public class Character {
 	private Rectangle rec = new Rectangle();
 	private final int MAX_HEALTH;
+	private int health;
 	private int currentHealth;
-	private HashMap<String, Integer> controls;
-	
-	//will be changed to TextureRegion for use with a sprite sheet
+	private HashMap<KeyboardMovement, Integer> controls;
+
+	// will be changed to TextureRegion for use with a sprite sheet
 	private Texture texture;
-	
-	public Character(float height, float width, float x, float y, int maxHealth, Texture texture, HashMap<String, Integer> controls)
-	{
+
+	public Character(float height, float width, float x, float y,
+			int maxHealth, Texture texture,
+			HashMap<KeyboardMovement, Integer> controls) {
 		rec.height = height;
 		rec.width = width;
 		rec.x = x;
@@ -27,59 +27,57 @@ public class Character
 		this.texture = texture;
 		this.controls = controls;
 	}
-	
-	public int getControl(String control)
-	{
+
+	public int getControl(KeyboardMovement control) {
 		return controls.get(control);
 	}
-	
-	public boolean canMoveLeft()
-	{
-		if (rec.x <= 0)
-			return false;
-		return true;
-	}
-	
-	public boolean canMoveRight()
-	{
-		if (rec.x + rec.width >= Gdx.graphics.getWidth())
-			return false;
-		return true;
+
+	public boolean canMoveLeft() {
+		return !(rec.x <= 0);
 	}
 
-	public int getCurrentHealth()
-	{
+	public boolean canMoveRight() {
+		return !(rec.x + rec.width >= Gdx.graphics.getWidth());
+	}
+
+	public int getCurrentHealth() {
 		return currentHealth;
 	}
 
-	public void setCurrentHealth(int currentHealth)
-	{
+	public void setCurrentHealth(int currentHealth) {
 		this.currentHealth = currentHealth;
 	}
-	
-	public float getX()
-	{
+
+	public float getX() {
 		return rec.x;
 	}
-	
-	public void setX(float x)
-	{
+
+	public void setX(float x) {
 		rec.x = x;
 	}
-	
-	public float getY()
-	{
+
+	public float getY() {
 		return rec.y;
 	}
-	
-	public void setY(float y)
-	{
+
+	public void setY(float y) {
 		rec.y = y;
 	}
-	
-	public Texture getTexture()
-	{
+
+	public Texture getTexture() {
 		return texture;
 	}
-	
+
+	public int getHealth() {
+		return health;
+	}
+
+	public void setHealth(int health) {
+		this.health = health;
+	}
+
+	public int getMaxHealth() {
+		return MAX_HEALTH;
+	}
+
 }
