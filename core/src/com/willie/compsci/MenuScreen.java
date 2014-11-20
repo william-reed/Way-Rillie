@@ -36,7 +36,8 @@ public class MenuScreen implements Screen {
 		camera.translate(w / 2, h / 2);
 		camera.update();
 		
-		playGameButton = new Button(new Texture(Gdx.files.internal("play.png")), new Vector2(w / 2 - 100, 100));
+		playGameButton = new Button(new Texture(Gdx.files.internal("play.png")), new Vector2(w / 2 - 100, h * .2f));
+		System.out.println(h);
 	}
 
 	@Override
@@ -62,7 +63,11 @@ public class MenuScreen implements Screen {
 
 	@Override
 	public void resize(int width, int height) {
-		//TODO: re-center menu buttons and a title
+		camera.setToOrtho(false);
+		int w = Gdx.graphics.getWidth();
+		int h = Gdx.graphics.getHeight();
+		titlePos.set(w / 2 - title.getWidth() / 2, h / 2 - title.getHeight() / 2 + 100);
+		playGameButton.getLocation().set(w / 2 - 100, h * .2f);
 	}
 
 	@Override
