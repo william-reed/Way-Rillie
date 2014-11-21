@@ -16,106 +16,94 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
  */
 public class GameScreen implements Screen {
 
-	private Game game;
-	private SpriteBatch batch;
-	private OrthographicCamera camera;
-	private HashMap<KeyboardMovement, Integer> player1Controls, player2Controls;
-	private Character duck, mojo;
-	private Character[] characters;
-	private final int WALK_SPEED;
+    private Game game;
+    private SpriteBatch batch;
+    private OrthographicCamera camera;
+    private HashMap<KeyboardMovement, Integer> player1Controls, player2Controls;
+    private Character duck, mojo;
+    private Character[] characters;
 
-	public GameScreen(Game game) {
-		this.game = game;
-		float w = Gdx.graphics.getWidth();
-		float h = Gdx.graphics.getHeight();
-		
-		//define controls (use yaml or something for this later?)
-		player1Controls = new HashMap<KeyboardMovement, Integer>();
-		player1Controls.put(KeyboardMovement.LEFT, Keys.A);
-		player1Controls.put(KeyboardMovement.RIGHT, Keys.D);
-		player1Controls.put(KeyboardMovement.JUMP, Keys.W);
-		
-		player2Controls = new HashMap<KeyboardMovement, Integer>();
-		player2Controls.put(KeyboardMovement.LEFT, Keys.LEFT);
-		player2Controls.put(KeyboardMovement.RIGHT, Keys.RIGHT);
-		player2Controls.put(KeyboardMovement.JUMP, Keys.UP);
-		
-		//create characters at opposite ends of screen
-		duck = new Character(64, 64, 0, 0, 10, new Texture("red.png"), player1Controls);
-		mojo = new Character(64, 64, w - 64, 0, 10, new Texture("blue.png"), player2Controls);
-		characters = new Character[2];
-		characters[0] = duck;
-		characters[1] = mojo;
-		
-		WALK_SPEED = 5;
-		
-		//create spritebatch and camera
-		batch = new SpriteBatch();
-		
-		camera = new OrthographicCamera(w, h);
-		//translate camera so the bottom left pixel is (0,0)
-		camera.translate(w / 2, h / 2);
-		camera.update();
-	}
-	
-	public void update(float delta) {
-		//update all the stuffs
-	}
-	
-	public void draw() {
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		
-		//draw all the stuffs
-		batch.begin();
-		batch.draw(duck.getTexture(), duck.getX(), duck.getY());
-		batch.draw(mojo.getTexture(), mojo.getX(), mojo.getY());
-		batch.end();
-	}
+    public GameScreen(Game game) {
+        this.game = game;
+        float w = Gdx.graphics.getWidth();
+        float h = Gdx.graphics.getHeight();
 
-	@Override
-	public void render(float delta) {
-		update(delta);
-		draw();
-		
-		//perform character control stuff
-		//TODO: player collision
-		for (Character c : characters)
-		{
-			if (Gdx.input.isKeyPressed(c.getControl(KeyboardMovement.LEFT)) && c.canMoveLeft())
-				c.setX(c.getX() - WALK_SPEED);
-			if (Gdx.input.isKeyPressed(c.getControl(KeyboardMovement.RIGHT)) && c.canMoveRight())
-				c.setX(c.getX() + WALK_SPEED);
-		}
-	}
+        // define controls (use yaml or something for this later?)
+        player1Controls = new HashMap<KeyboardMovement, Integer>();
+        player1Controls.put(KeyboardMovement.LEFT, Keys.A);
+        player1Controls.put(KeyboardMovement.RIGHT, Keys.D);
+        player1Controls.put(KeyboardMovement.JUMP, Keys.W);
 
-	@Override
-	public void resize(int width, int height) {
-	}
+        player2Controls = new HashMap<KeyboardMovement, Integer>();
+        player2Controls.put(KeyboardMovement.LEFT, Keys.LEFT);
+        player2Controls.put(KeyboardMovement.RIGHT, Keys.RIGHT);
+        player2Controls.put(KeyboardMovement.JUMP, Keys.UP);
 
-	@Override
-	public void show() {
+        // create characters at opposite ends of screen
+        duck = new Character(0, 0, 10, new Texture("red.png"), player1Controls);
+        mojo = new Character(w - 64, 0, 10, new Texture("blue.png"), player2Controls);
+        characters = new Character[2];
+        characters[0] = duck;
+        characters[1] = mojo;
 
-	}
+        // create spritebatch and camera
+        batch = new SpriteBatch();
 
-	@Override
-	public void hide() {
+        camera = new OrthographicCamera(w, h);
+        // translate camera so the bottom left pixel is (0,0)
+        camera.translate(w / 2, h / 2);
+        camera.update();
+    }
 
-	}
+    public void update(float delta) {
+        for (Character c : characters) {
+            c.update(delta);
+        }
+    }
 
-	@Override
-	public void pause() {
+    public void draw() {
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-	}
+        // draw all the stuffs
+        batch.begin();
+        batch.draw(duck.getTexture(), duck.getX(), duck.getY());
+        batch.draw(mojo.getTexture(), mojo.getX(), mojo.getY());
+        batch.end();
+    }
 
-	@Override
-	public void resume() {
+    @Override
+    public void render(float delta) {
+        update(delta);
+        draw();
+    }
 
-	}
+    @Override
+    public void resize(int width, int height) {}
 
-	@Override
-	public void dispose() {
+    @Override
+    public void show() {
 
-	}
+    }
+
+    @Override
+    public void hide() {
+
+    }
+
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public void resume() {
+
+    }
+
+    @Override
+    public void dispose() {
+
+    }
 
 }
