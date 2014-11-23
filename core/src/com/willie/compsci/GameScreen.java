@@ -4,12 +4,20 @@ import java.util.HashMap;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Box2D;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
 
 /**
  * The actual game screen
@@ -22,11 +30,18 @@ public class GameScreen implements Screen {
     private HashMap<KeyboardMovement, Integer> player1Controls, player2Controls;
     private Character duck, mojo;
     private Character[] characters;
-
+    private Matrix4 debugMatrix;
+    private final float PIXELS_TO_METERS = 100f;
+    
     public GameScreen(Game game) {
         this.game = game;
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();
+
+        camera = new OrthographicCamera(w, h);
+        // translate camera so the bottom left pixel is (0,0)
+        camera.translate(w / 2, h / 2);
+        camera.update();
 
         // define controls (use yaml or something for this later?)
         player1Controls = new HashMap<KeyboardMovement, Integer>();
@@ -39,20 +54,56 @@ public class GameScreen implements Screen {
         player2Controls.put(KeyboardMovement.RIGHT, Keys.RIGHT);
         player2Controls.put(KeyboardMovement.JUMP, Keys.UP);
 
+        initBox();
         // create characters at opposite ends of screen
-        duck = new Character(0, 0, 10, new Texture("red.png"), player1Controls);
-        mojo = new Character(w - 64, 0, 10, new Texture("blue.png"), player2Controls);
-        characters = new Character[2];
+        duck = new Character(100, 100, 10, new Texture("red.png"), player1Controls, world);
+        // mojo = new Character(w - 64, 0, 10, new Texture("blue.png"), player2Controls, world);
+        characters = new Character[1];
         characters[0] = duck;
-        characters[1] = mojo;
+        // characters[1] = mojo;
 
         // create spritebatch and camera
         batch = new SpriteBatch();
 
-        camera = new OrthographicCamera(w, h);
-        // translate camera so the bottom left pixel is (0,0)
-        camera.translate(w / 2, h / 2);
-        camera.update();
+    }
+
+    private World world;
+    private Box2DDebugRenderer debugRenderer;
+
+    private void initBox() {
+        Box2D.init();
+        world = new World(new Vector2(0, -10), true);
+        debugRenderer = new Box2DDebugRenderer();
+
+        BodyDef groundBodyDef = new BodyDef();
+        groundBodyDef.position.set(new Vector2(camera.viewportWidth / 2 / PIXELS_TO_METERS, 10 / PIXELS_TO_METERS));
+        Body groundBody = world.createBody(groundBodyDef);
+        PolygonShape groundBox = new PolygonShape();
+        groundBox.setAsBox(camera.viewportWidth / 2 / PIXELS_TO_METERS, 10.0f / PIXELS_TO_METERS);
+        groundBody.createFixture(groundBox, 0.0f);
+        
+        BodyDef wallLeftBodyDef = new BodyDef();
+        wallLeftBodyDef.position.set(new Vector2(10 / PIXELS_TO_METERS, camera.viewportHeight / 2 / PIXELS_TO_METERS));
+        Body wallLeftBody = world.createBody(wallLeftBodyDef);
+        PolygonShape wallLeftBox = new PolygonShape();
+        wallLeftBox.setAsBox(10 / PIXELS_TO_METERS, camera.viewportHeight / 2 / PIXELS_TO_METERS);
+        wallLeftBody.createFixture(wallLeftBox, 0.0f);
+        
+        BodyDef wallRightBodyDef = new BodyDef();
+        wallRightBodyDef.position.set(new Vector2((camera.viewportWidth - 10) / PIXELS_TO_METERS, camera.viewportHeight / 2 / PIXELS_TO_METERS));
+        Body wallRightBody = world.createBody(wallRightBodyDef);
+        PolygonShape wallRightBox = new PolygonShape();
+        wallRightBox.setAsBox(10 / PIXELS_TO_METERS, camera.viewportHeight / 2 / PIXELS_TO_METERS);
+        wallRightBody.createFixture(wallRightBox, 0.0f);
+        
+        //test a platform
+        BodyDef platformBodyDef = new BodyDef();
+        platformBodyDef.position.set(new Vector2((camera.viewportWidth / 2) / PIXELS_TO_METERS, 200 / PIXELS_TO_METERS));
+        Body platformBody = world.createBody(platformBodyDef);
+        PolygonShape platformBox = new PolygonShape();
+        platformBox.setAsBox(100 / PIXELS_TO_METERS, 6 / PIXELS_TO_METERS);
+        platformBody.createFixture(platformBox, 0.0f);
+        
     }
 
     public void update(float delta) {
@@ -65,17 +116,21 @@ public class GameScreen implements Screen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // draw all the stuffs
         batch.begin();
-        batch.draw(duck.getTexture(), duck.getX(), duck.getY());
-        batch.draw(mojo.getTexture(), mojo.getX(), mojo.getY());
+        {
+            duck.draw(batch);
+        }
         batch.end();
+        debugMatrix = batch.getProjectionMatrix().cpy().scale(PIXELS_TO_METERS, 
+                        PIXELS_TO_METERS, 0);
+        debugRenderer.render(world, debugMatrix);
     }
 
     @Override
     public void render(float delta) {
         update(delta);
         draw();
+        world.step(1 / 60f, 6, 2);
     }
 
     @Override
