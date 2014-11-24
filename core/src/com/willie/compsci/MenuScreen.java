@@ -36,7 +36,7 @@ public class MenuScreen implements Screen {
 		camera.translate(w / 2, h / 2);
 		camera.update();
 		
-		playGameButton = new Button(new Texture(Gdx.files.internal("play.png")), new Vector2(w / 2 - 100, h * .2f));
+		playGameButton = new Button(new Texture("play.png"), new Vector2(w / 2 - 100, h * .2f));
 	}
 
 	@Override

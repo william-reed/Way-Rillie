@@ -42,6 +42,7 @@ public class Character {
         bodyDef = new BodyDef();
         bodyDef.type = BodyType.DynamicBody;
         bodyDef.position.set(position);
+        bodyDef.fixedRotation = true;
         body = world.createBody(bodyDef);
         
         PolygonShape rectangle = new PolygonShape();
@@ -50,7 +51,7 @@ public class Character {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = rectangle;
         fixtureDef.density = 1; 
-        fixtureDef.friction = 1f;
+        fixtureDef.friction = 5f;
         fixtureDef.restitution = 0.2f;
         
         Fixture fixture = body.createFixture(fixtureDef);

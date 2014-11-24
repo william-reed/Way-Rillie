@@ -57,10 +57,10 @@ public class GameScreen implements Screen {
         initBox();
         // create characters at opposite ends of screen
         duck = new Character(100, 100, 10, new Texture("red.png"), player1Controls, world);
-        // mojo = new Character(w - 64, 0, 10, new Texture("blue.png"), player2Controls, world);
-        characters = new Character[1];
+        mojo = new Character(400, 100, 10, new Texture("blue.png"), player2Controls, world);
+        characters = new Character[2];
         characters[0] = duck;
-        // characters[1] = mojo;
+        characters[1] = mojo;
 
         // create spritebatch and camera
         batch = new SpriteBatch();
@@ -75,6 +75,7 @@ public class GameScreen implements Screen {
         world = new World(new Vector2(0, -10), true);
         debugRenderer = new Box2DDebugRenderer();
 
+        //these are all collision boundries. we can make a class to simplify this
         BodyDef groundBodyDef = new BodyDef();
         groundBodyDef.position.set(new Vector2(camera.viewportWidth / 2 / PIXELS_TO_METERS, 10 / PIXELS_TO_METERS));
         Body groundBody = world.createBody(groundBodyDef);
@@ -104,6 +105,12 @@ public class GameScreen implements Screen {
         platformBox.setAsBox(100 / PIXELS_TO_METERS, 6 / PIXELS_TO_METERS);
         platformBody.createFixture(platformBox, 0.0f);
         
+        BodyDef wallTopDef = new BodyDef();
+        wallTopDef.position.set(new Vector2(camera.viewportWidth / 2 / PIXELS_TO_METERS, (camera.viewportHeight - 10) / PIXELS_TO_METERS));
+        Body wallTop = world.createBody(wallTopDef);
+        PolygonShape wallTopBox = new PolygonShape();
+        wallTopBox.setAsBox(camera.viewportWidth / 2 / PIXELS_TO_METERS, 10.0f / PIXELS_TO_METERS);
+        wallTop.createFixture(wallTopBox, 0.0f);
     }
 
     public void update(float delta) {
@@ -118,7 +125,9 @@ public class GameScreen implements Screen {
 
         batch.begin();
         {
-            duck.draw(batch);
+            for (Character c : characters) {
+                c.draw(batch);
+            }
         }
         batch.end();
         debugMatrix = batch.getProjectionMatrix().cpy().scale(PIXELS_TO_METERS, 
