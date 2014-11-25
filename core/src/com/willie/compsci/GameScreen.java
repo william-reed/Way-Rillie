@@ -27,7 +27,7 @@ public class GameScreen implements Screen {
     private Game game;
     private SpriteBatch batch;
     private OrthographicCamera camera;
-    private HashMap<KeyboardMovement, Integer> player1Controls, player2Controls;
+    private HashMap<Control, Integer> player1Controls, player2Controls;
     private Character duck, mojo;
     private Character[] characters;
     private Matrix4 debugMatrix;
@@ -44,15 +44,15 @@ public class GameScreen implements Screen {
         camera.update();
 
         // define controls (use yaml or something for this later?)
-        player1Controls = new HashMap<KeyboardMovement, Integer>();
-        player1Controls.put(KeyboardMovement.LEFT, Keys.A);
-        player1Controls.put(KeyboardMovement.RIGHT, Keys.D);
-        player1Controls.put(KeyboardMovement.JUMP, Keys.W);
+        player1Controls = new HashMap<Control, Integer>();
+        player1Controls.put(Control.LEFT, Keys.A);
+        player1Controls.put(Control.RIGHT, Keys.D);
+        player1Controls.put(Control.JUMP, Keys.W);
 
-        player2Controls = new HashMap<KeyboardMovement, Integer>();
-        player2Controls.put(KeyboardMovement.LEFT, Keys.LEFT);
-        player2Controls.put(KeyboardMovement.RIGHT, Keys.RIGHT);
-        player2Controls.put(KeyboardMovement.JUMP, Keys.UP);
+        player2Controls = new HashMap<Control, Integer>();
+        player2Controls.put(Control.LEFT, Keys.LEFT);
+        player2Controls.put(Control.RIGHT, Keys.RIGHT);
+        player2Controls.put(Control.JUMP, Keys.UP);
 
         initBox();
         // create characters at opposite ends of screen

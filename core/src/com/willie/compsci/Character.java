@@ -22,7 +22,7 @@ public class Character {
     private int health;
     private int currentHealth;
     private Vector2 position;
-    private HashMap<KeyboardMovement, Integer> controls;
+    private HashMap<Control, Integer> controls;
     private BodyDef bodyDef;
     private Body body;
     private World world;
@@ -32,7 +32,7 @@ public class Character {
     private Texture texture;
 
     public Character(float x, float y, int maxHealth, Texture texture,
-                    HashMap<KeyboardMovement, Integer> controls, World world) {
+                    HashMap<Control, Integer> controls, World world) {
         MAX_HEALTH = maxHealth;
         this.texture = texture;
         this.controls = controls;
@@ -58,15 +58,16 @@ public class Character {
     }
     
     private final float MAX_VELOCITY = 3.0f;
+    private final float ACCELERATION = .1f;
     
     public void update(float delta) {
-        if (Gdx.input.isKeyPressed(getControl(KeyboardMovement.LEFT)) && canMoveLeft() && body.getLinearVelocity().x > -MAX_VELOCITY) {
-            body.applyLinearImpulse(-0.1f, 0, body.getPosition().x, body.getPosition().y, true);
+        if (Gdx.input.isKeyPressed(getControl(Control.LEFT)) && canMoveLeft() && body.getLinearVelocity().x > -MAX_VELOCITY) {
+            body.applyLinearImpulse(-ACCELERATION, 0, body.getPosition().x, body.getPosition().y, true);
         } 
-        if (Gdx.input.isKeyPressed(getControl(KeyboardMovement.RIGHT)) && canMoveRight() && body.getLinearVelocity().x < MAX_VELOCITY)
-            body.applyLinearImpulse(0.1f, 0, body.getPosition().x, body.getPosition().y, true);
+        if (Gdx.input.isKeyPressed(getControl(Control.RIGHT)) && canMoveRight() && body.getLinearVelocity().x < MAX_VELOCITY)
+            body.applyLinearImpulse(ACCELERATION, 0, body.getPosition().x, body.getPosition().y, true);
         //TODO: maybe more friction
-        if( Gdx.input.isKeyJustPressed(getControl(KeyboardMovement.JUMP))) {
+        if( Gdx.input.isKeyJustPressed(getControl(Control.JUMP))) {
             body.applyForceToCenter(new Vector2(0.0f, 100f), true);
             
         }
@@ -89,7 +90,7 @@ public class Character {
         return true;
     }
 
-    public int getControl(KeyboardMovement control) {
+    public int getControl(Control control) {
         return controls.get(control);
     }
 

@@ -1,5 +1,5 @@
 package com.willie.compsci;
 
-public enum KeyboardMovement {
+public enum Control {
 	LEFT, RIGHT, JUMP;
 }
