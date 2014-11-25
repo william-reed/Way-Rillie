@@ -25,6 +25,7 @@ public class Character {
     private HashMap<Control, Integer> controls;
     private BodyDef bodyDef;
     private Body body;
+    private Fixture fixture;
     private World world;
     private final float PIXELS_TO_METERS = 100f;
 
@@ -50,17 +51,26 @@ public class Character {
         
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = rectangle;
-        fixtureDef.density = 1; 
-        fixtureDef.friction = 5f;
-        fixtureDef.restitution = 0.2f;
+        fixtureDef.density = 0.75f; 
+        fixtureDef.friction = 1.5f;
+        fixtureDef.restitution = 0;
         
-        Fixture fixture = body.createFixture(fixtureDef);
+        fixture = body.createFixture(fixtureDef);
     }
     
-    private final float MAX_VELOCITY = 3.0f;
-    private final float ACCELERATION = .1f;
+//    TODO: You slide down walls (don't stick to them)
+//    TODO: Collition detection
+    
+    private final float MAX_VELOCITY = 3;
+    private final float ACCELERATION = 0.75f;
     
     public void update(float delta) {
+    	
+    	if (body.getLinearVelocity().y >= 0)
+    		fixture.setFriction(0);
+    	else
+    		fixture.setFriction(1.5f);
+    	
         if (Gdx.input.isKeyPressed(getControl(Control.LEFT)) && canMoveLeft() && body.getLinearVelocity().x > -MAX_VELOCITY) {
             body.applyLinearImpulse(-ACCELERATION, 0, body.getPosition().x, body.getPosition().y, true);
         } 
