@@ -16,8 +16,6 @@ import com.badlogic.gdx.physics.box2d.World;
 
 public class Character {
 
-    private static final int WALK_SPEED = 5;
-
     private final int MAX_HEALTH;
     private int health;
     private int currentHealth;
