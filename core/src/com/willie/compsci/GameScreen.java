@@ -57,10 +57,10 @@ public class GameScreen implements Screen {
         initBox();
         // create characters at opposite ends of screen
         duck = new Character(100, 100, 10, new Texture("red.png"), player1Controls, world);
-        mojo = new Character(400, 100, 10, new Texture("blue.png"), player2Controls, world);
-        characters = new Character[2];
+//        mojo = new Character(400, 100, 10, new Texture("blue.png"), player2Controls, world);
+        characters = new Character[1];
         characters[0] = duck;
-        characters[1] = mojo;
+//        characters[1] = mojo;
 
         // create spritebatch and camera
         batch = new SpriteBatch();

@@ -9,153 +9,179 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 
-public class Character {
+public class Character
+{
 
-    private final int MAX_HEALTH;
-    private int health;
-    private int currentHealth;
-    private Vector2 position;
-    private HashMap<Control, Integer> controls;
-    private BodyDef bodyDef;
-    private Body body;
-    private Fixture fixture;
-    private World world;
-    private final float PIXELS_TO_METERS = 100f;
+	private final int MAX_HEALTH;
+	private int health;
+	private int currentHealth;
+	private Vector2 position;
+	private HashMap<Control, Integer> controls;
+	private BodyDef bodyDef;
+	private Body body;
+	private Fixture fixture;
+	private World world;
+	private final float PIXELS_TO_METERS = 100f;
+	private Array<Contact> contacts;
+	private boolean canJump;
 
-    // will be changed to TextureRegion for use with a sprite sheet
-    private Texture texture;
+	// will be changed to TextureRegion for use with a sprite sheet
+	private Texture texture;
 
-    public Character(float x, float y, int maxHealth, Texture texture,
-                    HashMap<Control, Integer> controls, World world) {
-        MAX_HEALTH = maxHealth;
-        this.texture = texture;
-        this.controls = controls;
-        position = new Vector2(x / PIXELS_TO_METERS, y / PIXELS_TO_METERS);
-        this.world = world;
-        
-        bodyDef = new BodyDef();
-        bodyDef.type = BodyType.DynamicBody;
-        bodyDef.position.set(position);
-        bodyDef.fixedRotation = true;
-        body = world.createBody(bodyDef);
-        
-        PolygonShape rectangle = new PolygonShape();
-        rectangle.setAsBox((texture.getWidth() / 2) / PIXELS_TO_METERS, (texture.getHeight() / 2) / PIXELS_TO_METERS);
-        
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = rectangle;
-        fixtureDef.density = 0.75f; 
-        fixtureDef.friction = 1.5f;
-        fixtureDef.restitution = 0;
-        
-        fixture = body.createFixture(fixtureDef);
-    }
-    
-//    TODO: You slide down walls (don't stick to them)
-//    TODO: Collition detection
-    
-    private final float MAX_VELOCITY = 3;
-    private final float ACCELERATION = 0.75f;
-    
-    public void update(float delta) {
-    	
-    	if (body.getLinearVelocity().y >= 0)
-    		fixture.setFriction(0);
-    	else
-    		fixture.setFriction(1.5f);
-    	
-        if (Gdx.input.isKeyPressed(getControl(Control.LEFT)) && canMoveLeft() && body.getLinearVelocity().x > -MAX_VELOCITY) {
-            body.applyLinearImpulse(-ACCELERATION, 0, body.getPosition().x, body.getPosition().y, true);
-        } 
-        if (Gdx.input.isKeyPressed(getControl(Control.RIGHT)) && canMoveRight() && body.getLinearVelocity().x < MAX_VELOCITY)
-            body.applyLinearImpulse(ACCELERATION, 0, body.getPosition().x, body.getPosition().y, true);
-        //TODO: maybe more friction
-        if( Gdx.input.isKeyJustPressed(getControl(Control.JUMP))) {
-            body.applyForceToCenter(new Vector2(0.0f, 100f), true);
-            
-        }
-       // if (Gdx.input.isKeyJustPressed(getControl(KeyboardMovement.JUMP)) && canJump() && jumpState == JumpState.CONSTANT)
-       //     jumpState = JumpState.ASCENDING;
+	public Character(float x, float y, int maxHealth, Texture texture, HashMap<Control, Integer> controls, World world)
+	{
+		MAX_HEALTH = maxHealth;
+		this.texture = texture;
+		this.controls = controls;
+		position = new Vector2(x / PIXELS_TO_METERS, y / PIXELS_TO_METERS);
+		this.world = world;
 
-    }
-    
-    public void draw(SpriteBatch batch) {
-        batch.draw(texture, body.getPosition().x * PIXELS_TO_METERS - texture.getWidth() / 2, body.getPosition().y * PIXELS_TO_METERS - texture.getHeight() / 2);
-    }
+		bodyDef = new BodyDef();
+		bodyDef.type = BodyType.DynamicBody;
+		bodyDef.position.set(position);
+		bodyDef.fixedRotation = true;
+		body = world.createBody(bodyDef);
 
-    public boolean canFall() {
-        return (getY() >= 0);
-    }
+		PolygonShape rectangle = new PolygonShape();
+		rectangle.setAsBox((texture.getWidth() / 2) / PIXELS_TO_METERS, (texture.getHeight() / 2) / PIXELS_TO_METERS);
 
-    //
-    public boolean canJump() {
-        // TODO: implement
-        return true;
-    }
+		FixtureDef fixtureDef = new FixtureDef();
+		fixtureDef.shape = rectangle;
+		fixtureDef.density = 0.75f;
+		fixtureDef.friction = 1.5f;
+		fixtureDef.restitution = 0;
 
-    public int getControl(Control control) {
-        return controls.get(control);
-    }
+		fixture = body.createFixture(fixtureDef);
 
-    public boolean canMoveLeft() {
-        return !(position.x <= 0);
-    }
+		canJump = true;
+	}
 
-    public boolean canMoveRight() {
-        return !(position.x + texture.getWidth() >= Gdx.graphics.getWidth());
-    }
+	// TODO: You slide down walls (don't stick to them)
+	// TODO: Collition detection
 
-    public int getCurrentHealth() {
-        return currentHealth;
-    }
+	private final float MAX_VELOCITY = 3;
+	private final float ACCELERATION = 0.15f;
 
-    public void setCurrentHealth(int currentHealth) {
-        this.currentHealth = currentHealth;
-    }
+	public void update(float delta)
+	{
+		contacts = world.getContactList();
 
-    public float getX() {
-        return position.x;
-    }
+		for (Contact c : contacts)
+			if (fixture.equals(c.getFixtureA()) || fixture.equals(c.getFixtureB()))
+			{
+				System.out.println("canJump");
+				canJump = true;
+			}
 
-    public void setX(float x) {
-        position.x = x;
-    }
+		if (Gdx.input.isKeyPressed(getControl(Control.LEFT)) && canMoveLeft() && body.getLinearVelocity().x > -MAX_VELOCITY)
+			body.applyLinearImpulse(-ACCELERATION, 0, body.getPosition().x, body.getPosition().y, true);
 
-    public float getY() {
-        return position.y;
-    }
+		if (Gdx.input.isKeyPressed(getControl(Control.RIGHT)) && canMoveRight() && body.getLinearVelocity().x < MAX_VELOCITY)
+			body.applyLinearImpulse(ACCELERATION, 0, body.getPosition().x, body.getPosition().y, true);
 
-    public void setY(float y) {
-        position.y = y;
-    }
+		if (Gdx.input.isKeyJustPressed(getControl(Control.JUMP)) && canJump)
+		{
+			body.applyForceToCenter(new Vector2(0.0f, 100f), true);
+			canJump = false;
+		}
+	}
 
-    public Texture getTexture() {
-        return texture;
-    }
+	public void draw(SpriteBatch batch)
+	{
+		batch.draw(texture, body.getPosition().x * PIXELS_TO_METERS - texture.getWidth() / 2, body.getPosition().y * PIXELS_TO_METERS - texture.getHeight() / 2);
+	}
 
-    public int getHealth() {
-        return health;
-    }
+	public boolean canFall()
+	{
+		return (getY() >= 0);
+	}
 
-    public void setHealth(int health) {
-        this.health = health;
-    }
+	//
+	public boolean canJump()
+	{
+		// TODO: implement
+		return true;
+	}
 
-    public int getMaxHealth() {
-        return MAX_HEALTH;
-    }
+	public int getControl(Control control)
+	{
+		return controls.get(control);
+	}
 
-    public Vector2 getPosition() {
-        return body.getPosition();
-    }
+	public boolean canMoveLeft()
+	{
+		return !(position.x <= 0);
+	}
 
-    public void setPosition(Vector2 position) {
-        body.getPosition().set(position);
-    }
+	public boolean canMoveRight()
+	{
+		return !(position.x + texture.getWidth() >= Gdx.graphics.getWidth());
+	}
 
+	public int getCurrentHealth()
+	{
+		return currentHealth;
+	}
+
+	public void setCurrentHealth(int currentHealth)
+	{
+		this.currentHealth = currentHealth;
+	}
+
+	public float getX()
+	{
+		return position.x;
+	}
+
+	public void setX(float x)
+	{
+		position.x = x;
+	}
+
+	public float getY()
+	{
+		return position.y;
+	}
+
+	public void setY(float y)
+	{
+		position.y = y;
+	}
+
+	public Texture getTexture()
+	{
+		return texture;
+	}
+
+	public int getHealth()
+	{
+		return health;
+	}
+
+	public void setHealth(int health)
+	{
+		this.health = health;
+	}
+
+	public int getMaxHealth()
+	{
+		return MAX_HEALTH;
+	}
+
+	public Vector2 getPosition()
+	{
+		return body.getPosition();
+	}
+
+	public void setPosition(Vector2 position)
+	{
+		body.getPosition().set(position);
+	}
 }
