@@ -9,14 +9,17 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 
-public class Character
+public class Character implements ContactListener
 {
 
 	private final int MAX_HEALTH;
@@ -29,7 +32,6 @@ public class Character
 	private Fixture fixture;
 	private World world;
 	private final float PIXELS_TO_METERS = 100f;
-	private Array<Contact> contacts;
 	private boolean canJump;
 
 	// will be changed to TextureRegion for use with a sprite sheet
@@ -61,6 +63,7 @@ public class Character
 		fixture = body.createFixture(fixtureDef);
 
 		canJump = true;
+		world.setContactListener(this);
 	}
 
 	// TODO: You slide down walls (don't stick to them)
@@ -71,15 +74,6 @@ public class Character
 
 	public void update(float delta)
 	{
-		contacts = world.getContactList();
-
-		for (Contact c : contacts)
-			if (fixture.equals(c.getFixtureA()) || fixture.equals(c.getFixtureB()))
-			{
-				System.out.println("canJump");
-				canJump = true;
-			}
-
 		if (Gdx.input.isKeyPressed(getControl(Control.LEFT)) && canMoveLeft() && body.getLinearVelocity().x > -MAX_VELOCITY)
 			body.applyLinearImpulse(-ACCELERATION, 0, body.getPosition().x, body.getPosition().y, true);
 
@@ -89,7 +83,8 @@ public class Character
 		if (Gdx.input.isKeyJustPressed(getControl(Control.JUMP)) && canJump)
 		{
 			body.applyForceToCenter(new Vector2(0.0f, 100f), true);
-			canJump = false;
+//			canJump = false;
+//			System.out.println("can jump is false");
 		}
 	}
 
@@ -184,4 +179,22 @@ public class Character
 	{
 		body.getPosition().set(position);
 	}
+
+    @Override
+    public void beginContact(Contact contact) {
+        canJump = true;
+    }
+
+    @Override
+    public void endContact(Contact contact) {
+        canJump = false;
+    }
+
+    @Override
+    public void preSolve(Contact contact, Manifold oldManifold) {
+    }
+
+    @Override
+    public void postSolve(Contact contact, ContactImpulse impulse) {
+    }
 }
