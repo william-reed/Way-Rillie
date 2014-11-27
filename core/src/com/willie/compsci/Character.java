@@ -10,12 +10,13 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
-public class Character implements ContactListener
+public class Character
 {
 
 	private final int MAX_HEALTH;
@@ -27,8 +28,9 @@ public class Character implements ContactListener
 	private Body body;
 	private World world;
 	private final float PIXELS_TO_METERS = 100f;
-	private boolean canJump;
-
+	private boolean canJump = false;
+	private Fixture fixture;
+	
 	// will be changed to TextureRegion for use with a sprite sheet
 	private Texture texture;
 
@@ -55,10 +57,7 @@ public class Character implements ContactListener
 		fixtureDef.friction = 1.5f;
 		fixtureDef.restitution = 0;
 
-		body.createFixture(fixtureDef);
-
-		canJump = true;
-		world.setContactListener(this);
+		fixture = body.createFixture(fixtureDef);
 	}
 
 	// TODO: You slide down walls (don't stick to them)
@@ -75,11 +74,9 @@ public class Character implements ContactListener
 		if (Gdx.input.isKeyPressed(characterController.getRightKey()) && canMoveRight() && body.getLinearVelocity().x < MAX_VELOCITY)
 			body.applyLinearImpulse(ACCELERATION, 0, body.getPosition().x, body.getPosition().y, true);
 
-		if (Gdx.input.isKeyJustPressed(characterController.getJumpKey()) && canJump)
+		if (Gdx.input.isKeyJustPressed(characterController.getJumpKey()) && body.getLinearVelocity().y == 0)
 		{
 			body.applyForceToCenter(new Vector2(0.0f, 100f), true);
-//			canJump = false;
-//			System.out.println("can jump is false");
 		}
 	}
 
@@ -169,22 +166,4 @@ public class Character implements ContactListener
 	{
 		body.getPosition().set(position);
 	}
-
-    @Override
-    public void beginContact(Contact contact) {
-        canJump = true;
-    }
-
-    @Override
-    public void endContact(Contact contact) {
-        canJump = false;
-    }
-
-    @Override
-    public void preSolve(Contact contact, Manifold oldManifold) {
-    }
-
-    @Override
-    public void postSolve(Contact contact, ContactImpulse impulse) {
-    }
 }

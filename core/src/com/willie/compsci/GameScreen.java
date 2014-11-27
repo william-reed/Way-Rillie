@@ -25,7 +25,7 @@ public class GameScreen implements Screen {
     private Game game;
     private SpriteBatch batch;
     private OrthographicCamera camera;
-    private Character duck, mojo;
+    private Character duck, mojo, quack;
     private Character[] characters;
     private Matrix4 debugMatrix;
     private final float PIXELS_TO_METERS = 100f;
@@ -42,13 +42,13 @@ public class GameScreen implements Screen {
 
         initBox();
         // create characters at opposite ends of screen
-        duck =
-                        new Character(100, 100, 10, new Texture("red.png"),
-                                        new CharacterController(Keys.W, Keys.A, Keys.D), world);
-        // mojo = new Character(400, 100, 10, new Texture("blue.png"), player2Controls, world);
-        characters = new Character[1];
+        duck = new Character(100, 100, 10, new Texture("red.png"), new CharacterController(Keys.W, Keys.A, Keys.D), world);
+        mojo = new Character(400, 100, 10, new Texture("blue.png"), new CharacterController(Keys.UP, Keys.LEFT, Keys.RIGHT), world);
+        quack = new Character(200, 100, 10, new Texture("blue.png"), new CharacterController(Keys.T, Keys.F, Keys.H), world);
+        characters = new Character[3];
         characters[0] = duck;
-        // characters[1] = mojo;
+        characters[1] = mojo;
+        characters[2] = quack;
 
         // create spritebatch and camera
         batch = new SpriteBatch();
@@ -140,28 +140,18 @@ public class GameScreen implements Screen {
     public void resize(int width, int height) {}
 
     @Override
-    public void show() {
-
-    }
+    public void show() {}
 
     @Override
-    public void hide() {
-
-    }
+    public void hide() {}
 
     @Override
-    public void pause() {
-
-    }
+    public void pause() {}
 
     @Override
-    public void resume() {
-
-    }
+    public void resume() {}
 
     @Override
-    public void dispose() {
-
-    }
+    public void dispose() {}
 
 }
