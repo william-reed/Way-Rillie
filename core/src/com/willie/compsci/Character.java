@@ -1,7 +1,5 @@
 package com.willie.compsci;
 
-import java.util.HashMap;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -12,12 +10,10 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.Array;
 
 public class Character implements ContactListener
 {
@@ -26,10 +22,9 @@ public class Character implements ContactListener
 	private int health;
 	private int currentHealth;
 	private Vector2 position;
-	private HashMap<Control, Integer> controls;
+	private CharacterController characterController;
 	private BodyDef bodyDef;
 	private Body body;
-	private Fixture fixture;
 	private World world;
 	private final float PIXELS_TO_METERS = 100f;
 	private boolean canJump;
@@ -37,11 +32,11 @@ public class Character implements ContactListener
 	// will be changed to TextureRegion for use with a sprite sheet
 	private Texture texture;
 
-	public Character(float x, float y, int maxHealth, Texture texture, HashMap<Control, Integer> controls, World world)
+	public Character(float x, float y, int maxHealth, Texture texture, CharacterController characterController, World world)
 	{
 		MAX_HEALTH = maxHealth;
 		this.texture = texture;
-		this.controls = controls;
+		this.characterController = characterController;
 		position = new Vector2(x / PIXELS_TO_METERS, y / PIXELS_TO_METERS);
 		this.world = world;
 
@@ -60,7 +55,7 @@ public class Character implements ContactListener
 		fixtureDef.friction = 1.5f;
 		fixtureDef.restitution = 0;
 
-		fixture = body.createFixture(fixtureDef);
+		body.createFixture(fixtureDef);
 
 		canJump = true;
 		world.setContactListener(this);
@@ -74,13 +69,13 @@ public class Character implements ContactListener
 
 	public void update(float delta)
 	{
-		if (Gdx.input.isKeyPressed(getControl(Control.LEFT)) && canMoveLeft() && body.getLinearVelocity().x > -MAX_VELOCITY)
+		if (Gdx.input.isKeyPressed(characterController.getLeftKey()) && canMoveLeft() && body.getLinearVelocity().x > -MAX_VELOCITY)
 			body.applyLinearImpulse(-ACCELERATION, 0, body.getPosition().x, body.getPosition().y, true);
 
-		if (Gdx.input.isKeyPressed(getControl(Control.RIGHT)) && canMoveRight() && body.getLinearVelocity().x < MAX_VELOCITY)
+		if (Gdx.input.isKeyPressed(characterController.getRightKey()) && canMoveRight() && body.getLinearVelocity().x < MAX_VELOCITY)
 			body.applyLinearImpulse(ACCELERATION, 0, body.getPosition().x, body.getPosition().y, true);
 
-		if (Gdx.input.isKeyJustPressed(getControl(Control.JUMP)) && canJump)
+		if (Gdx.input.isKeyJustPressed(characterController.getJumpKey()) && canJump)
 		{
 			body.applyForceToCenter(new Vector2(0.0f, 100f), true);
 //			canJump = false;
@@ -103,11 +98,6 @@ public class Character implements ContactListener
 	{
 		// TODO: implement
 		return true;
-	}
-
-	public int getControl(Control control)
-	{
-		return controls.get(control);
 	}
 
 	public boolean canMoveLeft()
