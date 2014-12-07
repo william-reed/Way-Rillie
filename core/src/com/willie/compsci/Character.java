@@ -61,7 +61,6 @@ public class Character
 	}
 
 	// TODO: You slide down walls (don't stick to them)
-	// TODO: Collition detection
 
 	private final float MAX_VELOCITY = 3;
 	private final float ACCELERATION = 0.15f;

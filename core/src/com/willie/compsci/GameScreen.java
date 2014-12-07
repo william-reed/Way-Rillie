@@ -44,11 +44,11 @@ public class GameScreen implements Screen {
         // create characters at opposite ends of screen
         duck = new Character(100, 100, 10, new Texture("red.png"), new CharacterController(Keys.W, Keys.A, Keys.D), world);
         mojo = new Character(400, 100, 10, new Texture("blue.png"), new CharacterController(Keys.UP, Keys.LEFT, Keys.RIGHT), world);
-        quack = new Character(200, 100, 10, new Texture("blue.png"), new CharacterController(Keys.T, Keys.F, Keys.H), world);
-        characters = new Character[3];
+        //quack = new Character(200, 100, 10, new Texture("blue.png"), new CharacterController(Keys.T, Keys.F, Keys.H), world);
+        characters = new Character[2];
         characters[0] = duck;
         characters[1] = mojo;
-        characters[2] = quack;
+       // characters[2] = quack;
 
         // create spritebatch and camera
         batch = new SpriteBatch();
