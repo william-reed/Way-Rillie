@@ -48,7 +48,7 @@ public class Character implements ContactListener
 		bodyDef = new BodyDef();
 		bodyDef.type = BodyType.DynamicBody;
 		bodyDef.position.set(position);
-		bodyDef.fixedRotation = true;
+		bodyDef.fixedRotation = false;
 		body = world.createBody(bodyDef);
 
 		PolygonShape rectangle = new PolygonShape();
