@@ -11,5 +11,6 @@ public class DesktopLauncher {
 		config.title ="Way Rillie";
 		config.width = 800;
 		config.height = 450;
+		config.resizable = true;
 	}
 }

@@ -20,14 +20,14 @@ public class Character
 	private final int MAX_HEALTH;
 
 	private static final int FRAME_COLS = 6;
-	private static final int FRAME_ROWS = 2;
+	private static final int FRAME_ROWS = 4;
 
 	private static final int SPRITE_WIDTH = 64;
 	private static final int SPRITE_HEIGHT = 64;
 
-	Animation idleAni, jumpAni;
+	Animation idleAniLeft, idleAniRight, jumpAniLeft, jumpAniRight;
 	Texture spriteSheet;
-	TextureRegion[] idleFrames, jumpFrames;
+	TextureRegion[] idleFramesLeft, idleFramesRight, jumpFramesLeft, jumpFramesRight;
 	TextureRegion currentFrame;
 	private static float ANIMATION_SPEED;
 	private int aniState;
@@ -70,20 +70,26 @@ public class Character
 		this.spriteSheet = spriteSheet;
 
 		TextureRegion[][] tmp = TextureRegion.split(spriteSheet, spriteSheet.getWidth() / FRAME_COLS, spriteSheet.getHeight() / FRAME_ROWS);
-		idleFrames = new TextureRegion[FRAME_COLS];
-		jumpFrames = new TextureRegion[FRAME_COLS];
+		idleFramesLeft = new TextureRegion[FRAME_COLS];
+		idleFramesRight = new TextureRegion[FRAME_COLS];
+		jumpFramesLeft = new TextureRegion[FRAME_COLS];
+		jumpFramesRight = new TextureRegion[FRAME_COLS];
 
 		ANIMATION_SPEED = 0.15f;
 
 		for (int i = 0; i < FRAME_COLS; i++)
 		{
-			idleFrames[i] = tmp[0][i];
-			jumpFrames[i] = tmp[1][i];
+			idleFramesLeft[i] = tmp[0][i];
+			idleFramesRight[i] = tmp[1][i];
+			jumpFramesLeft[i] = tmp[2][i];
+			jumpFramesRight[i] = tmp[3][i];
 		}
 
-		idleAni = new Animation(ANIMATION_SPEED, idleFrames);
-		jumpAni = new Animation(ANIMATION_SPEED, jumpFrames);
-		currentFrame = idleFrames[0];
+		idleAniLeft = new Animation(ANIMATION_SPEED, idleFramesLeft);
+		idleAniRight = new Animation(ANIMATION_SPEED, idleFramesRight);
+		jumpAniLeft = new Animation(ANIMATION_SPEED, jumpFramesLeft);
+		jumpAniRight = new Animation(ANIMATION_SPEED, jumpFramesRight);
+		currentFrame = idleFramesRight[0];
 		aniState = 0;
 	}
 
@@ -96,14 +102,12 @@ public class Character
 	{
 		if (Gdx.input.isKeyPressed(characterController.getLeftKey()) && canMoveLeft() && body.getLinearVelocity().x > -MAX_VELOCITY)
 		{
-			System.out.println();
 			body.applyLinearImpulse(-ACCELERATION, 0, body.getPosition().x, body.getPosition().y, true);
 			aniState = 0;
 		}
 
 		if (Gdx.input.isKeyPressed(characterController.getRightKey()) && canMoveRight() && body.getLinearVelocity().x < MAX_VELOCITY)
 		{
-			System.out.println("trigger right");
 			body.applyLinearImpulse(ACCELERATION, 0, body.getPosition().x, body.getPosition().y, true);
 			aniState = 1;
 		}
@@ -111,20 +115,33 @@ public class Character
 		if (Gdx.input.isKeyJustPressed(characterController.getJumpKey()) && body.getLinearVelocity().y == 0)
 		{
 			body.applyForceToCenter(new Vector2(0.0f, 100f), true);
+			switch (aniState)
+			{
+			case 0:
+				aniState = 2;
+				break;
+			case 1:
+				aniState = 3;
+				break;
+			}
 		}
 	}
 
 	public void draw(SpriteBatch batch, float stateTime)
 	{
-		System.out.println(aniState);
 		switch (aniState)
 		{
 		case 0:
-			currentFrame = idleAni.getKeyFrame(stateTime, true);
+			currentFrame = idleAniLeft.getKeyFrame(stateTime, true);
 			break;
 		case 1:
-			currentFrame = idleAni.getKeyFrame(stateTime, true);
-			currentFrame.flip(true, false);
+			currentFrame = idleAniRight.getKeyFrame(stateTime, true);
+			break;
+		case 2:
+			currentFrame = jumpAniLeft.getKeyFrame(stateTime, false);
+			break;
+		case 3:
+			currentFrame = jumpAniRight.getKeyFrame(stateTime, false);
 			break;
 		}
 		batch.draw(currentFrame, body.getPosition().x * PIXELS_TO_METERS - SPRITE_WIDTH / 2, body.getPosition().y * PIXELS_TO_METERS - SPRITE_HEIGHT / 2);
