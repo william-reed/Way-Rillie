@@ -26,11 +26,12 @@ public class GameScreen implements Screen
 	private Game game;
 	private SpriteBatch batch;
 	private OrthographicCamera camera;
-	private Character duck, mojo, quack;
+	private Character duck, mojo;
 	private Character[] characters;
 	private Matrix4 debugMatrix;
 	private final float PIXELS_TO_METERS = 100f;
 	private float stateTime;
+	private Texture background;
 
 	public GameScreen(Game game)
 	{
@@ -45,19 +46,18 @@ public class GameScreen implements Screen
 
 		initBox();
 		// create characters at opposite ends of screen
-		duck = new Character(100, 100, 10, new Texture("duckSheet.png"), new CharacterController(Keys.W, Keys.A, Keys.D), world);
-		mojo = new Character(400, 100, 10, new Texture("mojoSheet.png"), new CharacterController(Keys.UP, Keys.LEFT, Keys.RIGHT), world);
-		// quack = new Character(200, 100, 10, new Texture("blue.png"), new
-		// CharacterController(Keys.T, Keys.F, Keys.H), world);
+		duck = new Character(100, 125, 10, 0, new Texture("duckSheet.png"), new CharacterController(Keys.W, Keys.A, Keys.D), world);
+		mojo = new Character(700, 125, 10, 1, new Texture("mojoSheet.png"), new CharacterController(Keys.UP, Keys.LEFT, Keys.RIGHT), world);
 		characters = new Character[2];
 		characters[0] = duck;
 		characters[1] = mojo;
-		// characters[2] = quack;
 
 		// create spritebatch and camera
 		batch = new SpriteBatch();
 		
 		stateTime = 0f;
+		
+		background = new Texture("bkg.png");
 	}
 
 	private World world;
@@ -94,7 +94,7 @@ public class GameScreen implements Screen
 
 		// test a platform
 		BodyDef platformBodyDef = new BodyDef();
-		platformBodyDef.position.set(new Vector2((camera.viewportWidth / 2) / PIXELS_TO_METERS, 200 / PIXELS_TO_METERS));
+		platformBodyDef.position.set(new Vector2((camera.viewportWidth / 2) / PIXELS_TO_METERS, 190 / PIXELS_TO_METERS));
 		Body platformBody = world.createBody(platformBodyDef);
 		PolygonShape platformBox = new PolygonShape();
 		platformBox.setAsBox(100 / PIXELS_TO_METERS, 6 / PIXELS_TO_METERS);
@@ -123,14 +123,15 @@ public class GameScreen implements Screen
 
 		batch.begin();
 		{
+			batch.draw(background, 0, 0);
 			for (Character c : characters)
 			{
 				c.draw(batch, stateTime);
 			}
 		}
 		batch.end();
-		debugMatrix = batch.getProjectionMatrix().cpy().scale(PIXELS_TO_METERS, PIXELS_TO_METERS, 0);
-		debugRenderer.render(world, debugMatrix);
+//		debugMatrix = batch.getProjectionMatrix().cpy().scale(PIXELS_TO_METERS, PIXELS_TO_METERS, 0);
+//		debugRenderer.render(world, debugMatrix);
 	}
 
 	@Override

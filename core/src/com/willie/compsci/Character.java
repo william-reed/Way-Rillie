@@ -42,7 +42,7 @@ public class Character
 	private boolean canJump = false;
 	private Fixture fixture;
 
-	public Character(float x, float y, int maxHealth, Texture spriteSheet, CharacterController characterController, World world)
+	public Character(float x, float y, int maxHealth, int spawnDirection, Texture spriteSheet, CharacterController characterController, World world)
 	{
 		MAX_HEALTH = maxHealth;
 		currentHealth = MAX_HEALTH;
@@ -90,7 +90,10 @@ public class Character
 		jumpAniLeft = new Animation(ANIMATION_SPEED, jumpFramesLeft);
 		jumpAniRight = new Animation(ANIMATION_SPEED, jumpFramesRight);
 		currentFrame = idleFramesRight[0];
-		aniState = 0;
+		if (spawnDirection == 1)
+			aniState = 0;
+		else
+			aniState = 1;
 	}
 
 	// TODO: You slide down walls (don't stick to them)
