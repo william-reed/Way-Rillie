@@ -8,5 +8,8 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		new LwjglApplication(new WayRillie(), config);
+		config.title ="Way Rillie";
+		config.width = 800;
+		config.height = 450;
 	}
 }
