@@ -46,8 +46,8 @@ public class GameScreen implements Screen
 
 		initBox();
 		// create characters at opposite ends of screen
-		duck = new Character(100, 125, 10, 0, new Texture("duckSheet.png"), new CharacterController(Keys.W, Keys.A, Keys.D), world);
-		mojo = new Character(700, 125, 10, 1, new Texture("mojoSheet.png"), new CharacterController(Keys.UP, Keys.LEFT, Keys.RIGHT), world);
+		duck = new Character(100, 125, 10, true, new Texture("duckSheet.png"), new CharacterController(Keys.W, Keys.A, Keys.D, Keys.S, Keys.SHIFT_LEFT), world);
+		mojo = new Character(700, 125, 10, false, new Texture("mojoSheet.png"), new CharacterController(Keys.UP, Keys.LEFT, Keys.RIGHT, Keys.DOWN, Keys.CONTROL_RIGHT), world);
 		characters = new Character[2];
 		characters[0] = duck;
 		characters[1] = mojo;
@@ -79,14 +79,14 @@ public class GameScreen implements Screen
 		groundBody.createFixture(groundBox, 0.0f);
 
 		BodyDef wallLeftBodyDef = new BodyDef();
-		wallLeftBodyDef.position.set(new Vector2(10 / PIXELS_TO_METERS, camera.viewportHeight / 2 / PIXELS_TO_METERS));
+		wallLeftBodyDef.position.set(new Vector2(5 / PIXELS_TO_METERS, camera.viewportHeight / 2 / PIXELS_TO_METERS));
 		Body wallLeftBody = world.createBody(wallLeftBodyDef);
 		PolygonShape wallLeftBox = new PolygonShape();
 		wallLeftBox.setAsBox(10 / PIXELS_TO_METERS, camera.viewportHeight / 2 / PIXELS_TO_METERS);
 		wallLeftBody.createFixture(wallLeftBox, 0.0f);
 
 		BodyDef wallRightBodyDef = new BodyDef();
-		wallRightBodyDef.position.set(new Vector2((camera.viewportWidth - 10) / PIXELS_TO_METERS, camera.viewportHeight / 2 / PIXELS_TO_METERS));
+		wallRightBodyDef.position.set(new Vector2((camera.viewportWidth - 5) / PIXELS_TO_METERS, camera.viewportHeight / 2 / PIXELS_TO_METERS));
 		Body wallRightBody = world.createBody(wallRightBodyDef);
 		PolygonShape wallRightBox = new PolygonShape();
 		wallRightBox.setAsBox(10 / PIXELS_TO_METERS, camera.viewportHeight / 2 / PIXELS_TO_METERS);
@@ -101,10 +101,10 @@ public class GameScreen implements Screen
 		platformBody.createFixture(platformBox, 0.0f);
 
 		BodyDef wallTopDef = new BodyDef();
-		wallTopDef.position.set(new Vector2(camera.viewportWidth / 2 / PIXELS_TO_METERS, (camera.viewportHeight - 10) / PIXELS_TO_METERS));
+		wallTopDef.position.set(new Vector2(camera.viewportWidth / 2 / PIXELS_TO_METERS, (camera.viewportHeight - 5) / PIXELS_TO_METERS));
 		Body wallTop = world.createBody(wallTopDef);
 		PolygonShape wallTopBox = new PolygonShape();
-		wallTopBox.setAsBox(camera.viewportWidth / 2 / PIXELS_TO_METERS, 10.0f / PIXELS_TO_METERS);
+		wallTopBox.setAsBox(camera.viewportWidth / 2 / PIXELS_TO_METERS, 4.0f / PIXELS_TO_METERS);
 		wallTop.createFixture(wallTopBox, 0.0f);
 	}
 

@@ -8,7 +8,7 @@ package com.willie.compsci;
  */
 public class CharacterController {
 
-    private int jumpKey, leftKey, rightKey;
+    private int jumpKey, leftKey, rightKey, fallKey, fireKey;
 
     /**
      * 
@@ -16,10 +16,12 @@ public class CharacterController {
      * @param leftKey
      * @param rightKey
      */
-    public CharacterController(int jumpKey, int leftKey, int rightKey) {
+    public CharacterController(int jumpKey, int leftKey, int rightKey, int fallKey, int fireKey) {
         this.jumpKey = jumpKey;
         this.leftKey = leftKey;
         this.rightKey = rightKey;
+        this.fallKey = fallKey;
+        this.fireKey = fireKey;
     }
 
     /**
@@ -68,5 +70,17 @@ public class CharacterController {
      */
     public void setRightKey(int rightKey) {
         this.rightKey = rightKey;
+    }
+    public int getFallKey(){
+    	return fallKey;
+    }
+    public void setFallKey(int fallKey){
+    	this.fallKey = fallKey;
+    }
+    public int getFireKey(){
+    	return fireKey;
+    }
+    public void setFireKey(int fireKey){
+    	this.fireKey = fireKey;
     }
 }
