@@ -53,9 +53,10 @@ public class Character {
 	 * @param spriteSheet sprite sheet containing all animations
 	 * @param characterController the CharacterController reference which handles all the characters controls
 	 * @param world the box2d world in use
+	 * @param vertices the vertices to be used for collision detection (maximum of 8 allowed)
 	 */
 	public Character(float x, float y, int maxHealth, boolean spawnDirection, Texture spriteSheet, 
-			CharacterController characterController,World world) {
+			CharacterController characterController, World world, float[] vertices) {
 		MAX_HEALTH = maxHealth;
 		currentHealth = MAX_HEALTH;
 		this.characterController = characterController;
@@ -67,10 +68,13 @@ public class Character {
 		bodyDef.fixedRotation = true;
 		body = world.createBody(bodyDef);
 
+		if(vertices.length > 16) 
+			throw new IllegalArgumentException("Only 8 vertices are can be used with box2d. ask will if you desire more");
+		else if(vertices.length < 4)
+			throw new IllegalArgumentException("You need at least 3 vertices for a triangle for box2d polygonshapes");
+		
 		PolygonShape border = new PolygonShape();
-		//points for the duck only atm
-		float[] vertices = new float[]{0 , 15 , 0 , 28 , 26 , 64 , 40 , 64 , 64 , 28 , 64 , 15 , 32 , 0};
-		//convert vertices to world cordinates
+		//convert vertices to world coordinates
 		for(int i = 0; i < vertices.length; i ++){
 			vertices[i] -= 32;
 			vertices[i] /= WayRillie.PIXELS_TO_METERS;

@@ -45,8 +45,10 @@ public class GameScreen implements Screen
 
 		initBox();
 		// create characters at opposite ends of screen
-		duck = new Character(100, 125, 10, true, new Texture("duckSheet.png"), new CharacterController(Keys.W, Keys.A, Keys.D, Keys.S, Keys.SHIFT_LEFT), world);
-		mojo = new Character(700, 125, 10, false, new Texture("mojoSheet.png"), new CharacterController(Keys.UP, Keys.LEFT, Keys.RIGHT, Keys.DOWN, Keys.CONTROL_RIGHT), world);
+		float[] duckVertices = new float[]{0, 15, 0, 28, 26, 64, 40, 64, 64, 28, 64, 15, 32, 0};
+		duck = new Character(100, 125, 10, true, new Texture("duckSheet.png"), new CharacterController(Keys.W, Keys.A, Keys.D, Keys.S, Keys.SHIFT_LEFT), world, duckVertices);
+		float[] mojoVertices = new float[]{0, 0, 0, 64, 64, 64, 64, 0};
+		mojo = new Character(700, 125, 10, false, new Texture("mojoSheet.png"), new CharacterController(Keys.UP, Keys.LEFT, Keys.RIGHT, Keys.DOWN, Keys.CONTROL_RIGHT), world, mojoVertices);
 		characters = new Character[2];
 		characters[0] = duck;
 		characters[1] = mojo;
