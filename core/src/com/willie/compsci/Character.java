@@ -67,12 +67,20 @@ public class Character {
 		bodyDef.fixedRotation = true;
 		body = world.createBody(bodyDef);
 
-		PolygonShape rectangle = new PolygonShape();
-		rectangle.setAsBox((SPRITE_WIDTH / 2) / WayRillie.PIXELS_TO_METERS,
-				(SPRITE_HEIGHT / 2) / WayRillie.PIXELS_TO_METERS);
-
+		PolygonShape border = new PolygonShape();
+		//points for the duck only atm
+		float[] vertices = new float[]{0 , 15 , 0 , 28 , 26 , 64 , 40 , 64 , 64 , 28 , 64 , 15 , 32 , 0};
+		//convert vertices to world cordinates
+		for(int i = 0; i < vertices.length; i ++){
+			vertices[i] -= 32;
+			vertices[i] /= WayRillie.PIXELS_TO_METERS;
+		}
+		//rectangle.setAsBox((SPRITE_WIDTH / 2) / WayRillie.PIXELS_TO_METERS,
+		//		(SPRITE_HEIGHT / 2) / WayRillie.PIXELS_TO_METERS);
+		border.set(vertices);
+		
 		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.shape = rectangle;
+		fixtureDef.shape = border;
 		fixtureDef.density = 0.75f;
 		fixtureDef.friction = 1.5f;
 		fixtureDef.restitution = 0;

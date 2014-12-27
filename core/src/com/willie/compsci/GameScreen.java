@@ -100,8 +100,8 @@ public class GameScreen implements Screen
 				c.draw(batch, stateTime);
 		}
 		batch.end();
-		//debugMatrix = batch.getProjectionMatrix().cpy().scale(WayRillie.PIXELS_TO_METERS, WayRillie.PIXELS_TO_METERS, 0);
-		//debugRenderer.render(world, debugMatrix);
+		debugMatrix = batch.getProjectionMatrix().cpy().scale(WayRillie.PIXELS_TO_METERS, WayRillie.PIXELS_TO_METERS, 0);
+		debugRenderer.render(world, debugMatrix);
 	}
 
 	@Override
