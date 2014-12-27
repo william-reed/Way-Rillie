@@ -1,7 +1,5 @@
 package com.willie.compsci;
 
-import java.util.ArrayList;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -16,8 +14,10 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
-public class Character
-{
+/**
+ * Represents a character to be used in this game
+ */
+public class Character {
 
 	private final int MAX_HEALTH;
 
@@ -40,17 +40,26 @@ public class Character
 	private BodyDef bodyDef;
 	private Body body;
 	private World world;
-	private final float PIXELS_TO_METERS = 100f;
-	private boolean canJump = false;
 	private Fixture fixture;
-	private ArrayList<FireBawl> fireBawls;
 
-	public Character(float x, float y, int maxHealth, boolean spawnDirection, Texture spriteSheet, CharacterController characterController, World world)
-	{
+	// private ArrayList<FireBawl> fireBawls;
+
+	/**
+	 * Constructs a new Character 
+	 * @param x position of the character
+	 * @param y position of the character
+	 * @param maxHealth maximum health of the Character
+	 * @param spawnDirection true spawns the character left, false spawns it right
+	 * @param spriteSheet sprite sheet containing all animations
+	 * @param characterController the CharacterController reference which handles all the characters controls
+	 * @param world the box2d world in use
+	 */
+	public Character(float x, float y, int maxHealth, boolean spawnDirection, Texture spriteSheet, 
+			CharacterController characterController,World world) {
 		MAX_HEALTH = maxHealth;
 		currentHealth = MAX_HEALTH;
 		this.characterController = characterController;
-		position = new Vector2(x / PIXELS_TO_METERS, y / PIXELS_TO_METERS);
+		position = new Vector2(x / WayRillie.PIXELS_TO_METERS, y / WayRillie.PIXELS_TO_METERS);
 		this.world = world;
 		bodyDef = new BodyDef();
 		bodyDef.type = BodyType.DynamicBody;
@@ -59,7 +68,8 @@ public class Character
 		body = world.createBody(bodyDef);
 
 		PolygonShape rectangle = new PolygonShape();
-		rectangle.setAsBox((SPRITE_WIDTH / 2) / PIXELS_TO_METERS, (SPRITE_HEIGHT / 2) / PIXELS_TO_METERS);
+		rectangle.setAsBox((SPRITE_WIDTH / 2) / WayRillie.PIXELS_TO_METERS,
+				(SPRITE_HEIGHT / 2) / WayRillie.PIXELS_TO_METERS);
 
 		FixtureDef fixtureDef = new FixtureDef();
 		fixtureDef.shape = rectangle;
@@ -71,8 +81,8 @@ public class Character
 
 		this.spriteSheet = spriteSheet;
 
-		fireBawls = new ArrayList<FireBawl>();
-		
+		// fireBawls = new ArrayList<FireBawl>();
+
 		TextureRegion[][] tmp = TextureRegion.split(spriteSheet, spriteSheet.getWidth() / FRAME_COLS, spriteSheet.getHeight() / FRAME_ROWS);
 		idleFramesLeft = new TextureRegion[FRAME_COLS];
 		idleFramesRight = new TextureRegion[FRAME_COLS];
@@ -81,8 +91,7 @@ public class Character
 
 		ANIMATION_SPEED = 0.15f;
 
-		for (int i = 0; i < FRAME_COLS; i++)
-		{
+		for (int i = 0; i < FRAME_COLS; i++) {
 			idleFramesLeft[i] = tmp[0][i];
 			idleFramesRight[i] = tmp[1][i];
 			jumpFramesLeft[i] = tmp[2][i];
@@ -100,45 +109,37 @@ public class Character
 			aniState = AnimationState.IDLE_RIGHT;
 	}
 
-	// TODO: You slide down walls (don't stick to them)
-
 	private final float MAX_VELOCITY = 3;
 	private final float ACCELERATION = 0.15f;
 
-	public void update(float delta)
-	{
-		if (Gdx.input.isKeyPressed(characterController.getLeftKey()) && canMoveLeft() && body.getLinearVelocity().x > -MAX_VELOCITY)
-		{
-			body.applyLinearImpulse(-ACCELERATION, 0, body.getPosition().x, body.getPosition().y, true);
-			aniState = AnimationState.IDLE_LEFT;
-		}
-
-		if (Gdx.input.isKeyPressed(characterController.getRightKey()) && canMoveRight() && body.getLinearVelocity().x < MAX_VELOCITY)
-		{
-			body.applyLinearImpulse(ACCELERATION, 0, body.getPosition().x, body.getPosition().y, true);
-			aniState = AnimationState.IDLE_RIGHT;
-		}
-
-		if(Gdx.input.isKeyJustPressed(characterController.getFallKey()) && body.getLinearVelocity().y != 0){
-			body.applyForceToCenter(new Vector2(0.0f, -100f), true);
-			//TODO: change to idle state based off of direction (l/r)
-			switch(aniState)
-			{
-			case JUMP_LEFT:
+	/**
+	 * All the update logic for the game (no drawing stuff)
+	 */
+	public void update(float delta) {
+		if (Gdx.input.isKeyPressed(characterController.getLeftKey())
+				&& canMoveLeft() && body.getLinearVelocity().x > -MAX_VELOCITY) {
+			body.applyLinearImpulse(-ACCELERATION, 0, body.getPosition().x,
+					body.getPosition().y, true);
+			if (body.getLinearVelocity().y == 0)
 				aniState = AnimationState.IDLE_LEFT;
-				break;
-			case JUMP_RIGHT:
-				aniState = AnimationState.IDLE_RIGHT;
-				break;
-			}
+			else
+				aniState = AnimationState.JUMP_LEFT;
 		}
-		
-		if (Gdx.input.isKeyJustPressed(characterController.getJumpKey()) && body.getLinearVelocity().y == 0)
-		{
-			System.out.println(aniState);
-			body.applyForceToCenter(new Vector2(0.0f, 100f), true);
-			switch (aniState)
-			{
+
+		if (Gdx.input.isKeyPressed(characterController.getRightKey())
+				&& canMoveRight() && body.getLinearVelocity().x < MAX_VELOCITY) {
+			body.applyLinearImpulse(ACCELERATION, 0, body.getPosition().x,
+					body.getPosition().y, true);
+			if (body.getLinearVelocity().y == 0)
+				aniState = AnimationState.IDLE_RIGHT;
+			else
+				aniState = AnimationState.JUMP_RIGHT;
+		}
+
+		if (Gdx.input.isKeyJustPressed(characterController.getJumpKey())
+				&& canJump()) {
+			body.applyForceToCenter(0.0f, 100f, true);
+			switch (aniState) {
 			case IDLE_LEFT:
 				aniState = AnimationState.JUMP_LEFT;
 				break;
@@ -146,14 +147,8 @@ public class Character
 				aniState = AnimationState.JUMP_RIGHT;
 				break;
 			}
-		}
-		
-		//something wrong here hmmm
-		if(body.getLinearVelocity().x == 0 && body.getLinearVelocity().y == 0 && (aniState == AnimationState.JUMP_LEFT  || aniState == AnimationState.JUMP_RIGHT)) {
-			System.out.println(aniState);
-			//TODO: switch to a idle left or idle right here
-			switch (aniState)
-			{
+		} else if (body.getLinearVelocity().y == 0) {
+			switch (aniState) {
 			case JUMP_LEFT:
 				aniState = AnimationState.IDLE_LEFT;
 				break;
@@ -162,26 +157,32 @@ public class Character
 				break;
 			}
 		}
-		
-		if (Gdx.input.isKeyJustPressed(characterController.getFireKey()))
-		{
-		
-			switch (aniState)
-			{
-			case IDLE_LEFT:
-				fireBawls.add(new FireBawl(false, position));
-				break;
-			case IDLE_RIGHT:
-				fireBawls.add(new FireBawl(true, position));
-				break;
-			}
+
+		if (Gdx.input.isKeyJustPressed(characterController.getFallKey())
+				&& !canJump()) {
+			body.applyForceToCenter(new Vector2(0.0f, -100f), true);
 		}
+
+		// if (Gdx.input.isKeyJustPressed(characterController.getFireKey()))
+		// {
+		//
+		// switch (aniState)
+		// {
+		// case IDLE_LEFT:
+		// fireBawls.add(new FireBawl(false, position));
+		// break;
+		// case IDLE_RIGHT:
+		// fireBawls.add(new FireBawl(true, position));
+		// break;
+		// }
+		// }
 	}
 
-	public void draw(SpriteBatch batch, float stateTime)
-	{
-		switch (aniState)
-		{
+	/**
+	 * Draws all the character stuff
+	 */
+	public void draw(SpriteBatch batch, float stateTime) {
+		switch (aniState) {
 		case IDLE_LEFT:
 			currentFrame = idleAniLeft.getKeyFrame(stateTime, true);
 			break;
@@ -195,76 +196,94 @@ public class Character
 			currentFrame = jumpAniRight.getKeyFrame(stateTime, false);
 			break;
 		}
-		batch.draw(currentFrame, body.getPosition().x * PIXELS_TO_METERS - SPRITE_WIDTH / 2, body.getPosition().y * PIXELS_TO_METERS - SPRITE_HEIGHT / 2);
-		for (FireBawl b : fireBawls)
-			b.draw(batch);
+		batch.draw(currentFrame, body.getPosition().x * WayRillie.PIXELS_TO_METERS
+				- SPRITE_WIDTH / 2, body.getPosition().y * WayRillie.PIXELS_TO_METERS
+				- SPRITE_HEIGHT / 2);
+		// for (FireBawl b : fireBawls)
+		// b.draw(batch);
 	}
 
-	public boolean canFall()
-	{
-		return (getY() >= 0);
+	/**
+	 * @return true if the character can jump
+	 */
+	public boolean canJump() {
+		return body.getLinearVelocity().y == 0;
 	}
 
-	public boolean canJump()
-	{
-		// TODO: implement
-		return true;
-	}
-
-	public boolean canMoveLeft()
-	{
+	/**
+	 * @return true if the character can move left
+	 */
+	public boolean canMoveLeft() {
 		return !(position.x <= 0);
 	}
 
-	public boolean canMoveRight()
-	{
+	/**
+	 * @return true if the character can move right
+	 */
+	public boolean canMoveRight() {
 		return !(position.x + SPRITE_WIDTH >= Gdx.graphics.getWidth());
 	}
 
-	public int getCurrentHealth()
-	{
+	/**
+	 * (never changes as of 12/27/14)
+	 * @return the current health of the character 
+	 */
+	public int getCurrentHealth() {
 		return currentHealth;
 	}
 
-	public void setCurrentHealth(int currentHealth)
-	{
+	/**
+	 * set the current health of the character
+	 * <br>If the health set to the character is greater
+	 * than the maximum health of the character its health
+	 * will be set to max
+	 * @param currentHealth health to be set to [0, MAX_HEALTH]
+	 */
+	public void setCurrentHealth(int currentHealth) {
+		if(currentHealth > MAX_HEALTH)
+			currentHealth = MAX_HEALTH;
 		this.currentHealth = currentHealth;
 	}
+	
+	/**
+	 * Sets the characters current health to its maximum
+	 */
+	public void setHealthToMax(){
+		this.currentHealth = MAX_HEALTH;
+	}
 
-	public float getX()
-	{
+	/**
+	 * @return the max health of the character
+	 */
+	public int getMaxHealth() {
+		return MAX_HEALTH;
+	}
+	
+	/**
+	 * @return the x position of the character
+	 */
+	public float getX() {
 		return position.x;
 	}
 
-	public void setX(float x)
-	{
+	/**
+	 * set the x position of the character
+	 */
+	public void setX(float x) {
 		position.x = x;
 	}
 
-	public float getY()
-	{
+	/**
+	 * @return the y position of the character
+	 */
+	public float getY() {
 		return position.y;
 	}
 
-	public void setY(float y)
-	{
+	/**
+	 * set the y position of the character
+	 */
+	public void setY(float y) {
 		position.y = y;
 	}
-
-	public int getMaxHealth()
-	{
-		return MAX_HEALTH;
-	}
-
-	public Vector2 getPosition()
-	{
-		return body.getPosition();
-	}
-
-	public void setPosition(Vector2 position)
-	{
-		body.getPosition().set(position);
-	}
-String death = "Ash nazg durbaktuluk Ash nazg krimpatul Ash nazg thrat" +
-"aktuluk Agh burzum ishi gimbatul";
 }

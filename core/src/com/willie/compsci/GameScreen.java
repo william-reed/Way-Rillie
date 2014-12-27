@@ -29,7 +29,6 @@ public class GameScreen implements Screen
 	private Character duck, mojo;
 	private Character[] characters;
 	private Matrix4 debugMatrix;
-	private final float PIXELS_TO_METERS = 100f;
 	private float stateTime;
 	private Texture background;
 
@@ -69,51 +68,24 @@ public class GameScreen implements Screen
 		world = new World(new Vector2(0, -10), true);
 		debugRenderer = new Box2DDebugRenderer();
 
-		// these are all collision boundries. we can make a class to simplify
-		// this
-		BodyDef groundBodyDef = new BodyDef();
-		groundBodyDef.position.set(new Vector2(camera.viewportWidth / 2 / PIXELS_TO_METERS, 10 / PIXELS_TO_METERS));
-		Body groundBody = world.createBody(groundBodyDef);
-		PolygonShape groundBox = new PolygonShape();
-		groundBox.setAsBox(camera.viewportWidth / 2 / PIXELS_TO_METERS, 10.0f / PIXELS_TO_METERS);
-		groundBody.createFixture(groundBox, 0.0f);
+		//bottom 
+		new RectangularBoundry(world, camera.viewportWidth / 2, 10, camera.viewportWidth, 10);
+		//left
+		new RectangularBoundry(world, 5, camera.viewportHeight / 2, 20, camera.viewportHeight);
+		//right
+		new RectangularBoundry(world, camera.viewportWidth - 5, camera.viewportHeight / 2, 20, camera.viewportHeight);
+		//top
+		new RectangularBoundry(world, camera.viewportWidth / 2, camera.viewportHeight - 5, camera.viewportWidth, 8);
 
-		BodyDef wallLeftBodyDef = new BodyDef();
-		wallLeftBodyDef.position.set(new Vector2(5 / PIXELS_TO_METERS, camera.viewportHeight / 2 / PIXELS_TO_METERS));
-		Body wallLeftBody = world.createBody(wallLeftBodyDef);
-		PolygonShape wallLeftBox = new PolygonShape();
-		wallLeftBox.setAsBox(10 / PIXELS_TO_METERS, camera.viewportHeight / 2 / PIXELS_TO_METERS);
-		wallLeftBody.createFixture(wallLeftBox, 0.0f);
-
-		BodyDef wallRightBodyDef = new BodyDef();
-		wallRightBodyDef.position.set(new Vector2((camera.viewportWidth - 5) / PIXELS_TO_METERS, camera.viewportHeight / 2 / PIXELS_TO_METERS));
-		Body wallRightBody = world.createBody(wallRightBodyDef);
-		PolygonShape wallRightBox = new PolygonShape();
-		wallRightBox.setAsBox(10 / PIXELS_TO_METERS, camera.viewportHeight / 2 / PIXELS_TO_METERS);
-		wallRightBody.createFixture(wallRightBox, 0.0f);
-
-		// test a platform
-		BodyDef platformBodyDef = new BodyDef();
-		platformBodyDef.position.set(new Vector2((camera.viewportWidth / 2) / PIXELS_TO_METERS, 190 / PIXELS_TO_METERS));
-		Body platformBody = world.createBody(platformBodyDef);
-		PolygonShape platformBox = new PolygonShape();
-		platformBox.setAsBox(100 / PIXELS_TO_METERS, 6 / PIXELS_TO_METERS);
-		platformBody.createFixture(platformBox, 0.0f);
-
-		BodyDef wallTopDef = new BodyDef();
-		wallTopDef.position.set(new Vector2(camera.viewportWidth / 2 / PIXELS_TO_METERS, (camera.viewportHeight - 5) / PIXELS_TO_METERS));
-		Body wallTop = world.createBody(wallTopDef);
-		PolygonShape wallTopBox = new PolygonShape();
-		wallTopBox.setAsBox(camera.viewportWidth / 2 / PIXELS_TO_METERS, 4.0f / PIXELS_TO_METERS);
-		wallTop.createFixture(wallTopBox, 0.0f);
+		//platform in middle of screen
+		//TODO: probably will wind up getting rid of this or changing it eventually
+		new RectangularBoundry(world, camera.viewportWidth / 2, 190, 200, 12);
 	}
 
 	public void update(float delta)
 	{
 		for (Character c : characters)
-		{
 			c.update(delta);
-		}
 	}
 
 	public void draw()
@@ -125,13 +97,11 @@ public class GameScreen implements Screen
 		{
 			batch.draw(background, 0, 0);
 			for (Character c : characters)
-			{
 				c.draw(batch, stateTime);
-			}
 		}
 		batch.end();
-//		debugMatrix = batch.getProjectionMatrix().cpy().scale(PIXELS_TO_METERS, PIXELS_TO_METERS, 0);
-//		debugRenderer.render(world, debugMatrix);
+		//debugMatrix = batch.getProjectionMatrix().cpy().scale(WayRillie.PIXELS_TO_METERS, WayRillie.PIXELS_TO_METERS, 0);
+		//debugRenderer.render(world, debugMatrix);
 	}
 
 	@Override
