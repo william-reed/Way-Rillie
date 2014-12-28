@@ -48,11 +48,12 @@ public class GameScreen implements Screen
 		float[] duckVerticesLeft = new float[]{0, 15, 0, 28, 26, 64, 40, 64, 50, 33, 50, 14, 32, 0};
 		float[] duckVerticesRight = new float[]{14, 14, 14, 33, 26, 64, 40, 64, 64, 28, 64, 15, 32, 0};
 		duck = new Character(100, 125, 10, true, new Texture("duckSheet.png"), new CharacterController(Keys.W, Keys.A, Keys.D, Keys.S, Keys.SHIFT_LEFT), world, duckVerticesLeft, duckVerticesRight);
-		float[] mojoVertices = new float[]{0, 0, 0, 64, 64, 64, 64, 0};
-		//mojo = new Character(700, 125, 10, false, new Texture("mojoSheet.png"), new CharacterController(Keys.UP, Keys.LEFT, Keys.RIGHT, Keys.DOWN, Keys.CONTROL_RIGHT), world, mojoVertices);
-		characters = new Character[1];
+		float[] mojoVerticesLeft = new float[]{0, 9, 0, 28, 10, 28, 10, 64, 64, 64, 64, 30, 51, 5, 28, 5};
+		float[] mojoVerticesRight = new float[]{0, 64, 52, 64, 52, 29, 64, 29, 64, 9, 35, 5, 12, 5, 0, 30};
+		mojo = new Character(700, 125, 10, false, new Texture("mojoSheet.png"), new CharacterController(Keys.UP, Keys.LEFT, Keys.RIGHT, Keys.DOWN, Keys.CONTROL_RIGHT), world, mojoVerticesLeft, mojoVerticesRight);
+		characters = new Character[2];
 		characters[0] = duck;
-		//characters[1] = mojo;
+		characters[1] = mojo;
 
 		// create spritebatch and camera
 		batch = new SpriteBatch();
@@ -103,8 +104,8 @@ public class GameScreen implements Screen
 				c.draw(batch, stateTime);
 		}
 		batch.end();
-		debugMatrix = batch.getProjectionMatrix().cpy().scale(WayRillie.PIXELS_TO_METERS, WayRillie.PIXELS_TO_METERS, 0);
-		debugRenderer.render(world, debugMatrix);
+		//debugMatrix = batch.getProjectionMatrix().cpy().scale(WayRillie.PIXELS_TO_METERS, WayRillie.PIXELS_TO_METERS, 0);
+		//debugRenderer.render(world, debugMatrix);
 	}
 
 	@Override
