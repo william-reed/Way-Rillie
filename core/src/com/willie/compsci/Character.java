@@ -31,7 +31,7 @@ public class Character {
 	private Texture spriteSheet;
 	private TextureRegion[] idleFramesLeft, idleFramesRight, jumpFramesLeft, jumpFramesRight;
 	private TextureRegion currentFrame;
-	private static float ANIMATION_SPEED;
+	private static final float ANIMATION_SPEED = 0.15f;
 	private AnimationState aniState;
 
 	private int currentHealth;
@@ -106,6 +106,7 @@ public class Character {
 		fixtureDefRight = new FixtureDef();
 		fixtureDefRight.shape = borderRight;
 		//TODO: make these constants
+		//.75/1 = x / (.64 * .64)
 		fixtureDefRight.density = 0.75f;
 		fixtureDefRight.friction = 1.5f;
 		fixtureDefRight.restitution = 0;
@@ -124,8 +125,6 @@ public class Character {
 		idleFramesRight = new TextureRegion[FRAME_COLS];
 		jumpFramesLeft = new TextureRegion[FRAME_COLS];
 		jumpFramesRight = new TextureRegion[FRAME_COLS];
-
-		ANIMATION_SPEED = 0.15f;
 
 		for (int i = 0; i < FRAME_COLS; i++) {
 			idleFramesLeft[i] = tmp[0][i];
@@ -151,6 +150,7 @@ public class Character {
 
 	/**
 	 * All the update logic for the game (no drawing stuff)
+	 * Mostly input handling
 	 */
 	public void update(float delta) {
 		//move left
