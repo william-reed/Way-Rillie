@@ -41,6 +41,8 @@ public class Character {
 	private Body body;
 	private World world;
 	private Fixture fixture;
+	
+	private FixtureDef fixtureDefRight, fixtureDefLeft;
 
 	// private ArrayList<FireBawl> fireBawls;
 
@@ -53,10 +55,11 @@ public class Character {
 	 * @param spriteSheet sprite sheet containing all animations
 	 * @param characterController the CharacterController reference which handles all the characters controls
 	 * @param world the box2d world in use
-	 * @param vertices the vertices to be used for collision detection (maximum of 8 allowed)
+	 * @param verticesLeft the vertices to be used for collision detection when the character is facing left(maximum of 8 allowed, length of 16)
+	 * @param verticesRight the vertices to be used for collision detection when the character is facing right(maximum of 8 allowed, length of 16)
 	 */
 	public Character(float x, float y, int maxHealth, boolean spawnDirection, Texture spriteSheet, 
-			CharacterController characterController, World world, float[] vertices) {
+			CharacterController characterController, World world, float[] verticesLeft, float[] verticesRight) {
 		MAX_HEALTH = maxHealth;
 		currentHealth = MAX_HEALTH;
 		this.characterController = characterController;
@@ -67,33 +70,54 @@ public class Character {
 		bodyDef.position.set(position);
 		bodyDef.fixedRotation = true;
 		body = world.createBody(bodyDef);
+		direction = spawnDirection;
 
-		if(vertices.length > 16) 
+		//TODO: make sure vertices.length is divisable by 2
+		//TODO: should create a more individualized message. too broad for debugging
+		if(verticesLeft.length > 16 || verticesRight.length > 16) 
 			throw new IllegalArgumentException("Only 8 vertices are can be used with box2d. ask will if you desire more");
-		else if(vertices.length < 4)
+		else if(verticesLeft.length < 4 || verticesRight.length < 4)
 			throw new IllegalArgumentException("You need at least 3 vertices for a triangle for box2d polygonshapes");
 		
-		PolygonShape border = new PolygonShape();
-		//convert vertices to world coordinates
-		for(int i = 0; i < vertices.length; i ++){
-			vertices[i] -= 32;
-			vertices[i] /= WayRillie.PIXELS_TO_METERS;
-		}
-		//rectangle.setAsBox((SPRITE_WIDTH / 2) / WayRillie.PIXELS_TO_METERS,
-		//		(SPRITE_HEIGHT / 2) / WayRillie.PIXELS_TO_METERS);
-		border.set(vertices);
+		PolygonShape borderLeft  = new PolygonShape();
+		PolygonShape borderRight = new PolygonShape();
 		
-		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.shape = border;
-		fixtureDef.density = 0.75f;
-		fixtureDef.friction = 1.5f;
-		fixtureDef.restitution = 0;
+		//convert vertices to world coordinates
+		for(int i = 0; i < verticesLeft.length; i ++){
+			verticesLeft[i] -= 32;
+			verticesLeft[i] /= WayRillie.PIXELS_TO_METERS;
+		}
 
-		fixture = body.createFixture(fixtureDef);
+		for(int i = 0; i < verticesRight.length; i ++){
+			verticesRight[i] -= 32;
+			verticesRight[i] /= WayRillie.PIXELS_TO_METERS;
+		}
+		
+		borderLeft.set(verticesLeft);
+		borderRight.set(verticesRight);
+
+		fixtureDefLeft = new FixtureDef();
+		fixtureDefLeft.shape = borderLeft;
+		//TODO: make these constants
+		fixtureDefLeft.density = 0.75f;
+		fixtureDefLeft.friction = 1.5f;
+		fixtureDefLeft.restitution = 0;
+		
+		fixtureDefRight = new FixtureDef();
+		fixtureDefRight.shape = borderRight;
+		//TODO: make these constants
+		fixtureDefRight.density = 0.75f;
+		fixtureDefRight.friction = 1.5f;
+		fixtureDefRight.restitution = 0;
+
+		if(spawnDirection)
+			fixture = body.createFixture(fixtureDefLeft);
+		else
+			fixture = body.createFixture(fixtureDefRight);
 
 		this.spriteSheet = spriteSheet;
 
-		// fireBawls = new ArrayList<FireBawl>();
+		//ddwaw fireBawls = new ArrayList<FireBawl>();
 
 		TextureRegion[][] tmp = TextureRegion.split(spriteSheet, spriteSheet.getWidth() / FRAME_COLS, spriteSheet.getHeight() / FRAME_ROWS);
 		idleFramesLeft = new TextureRegion[FRAME_COLS];
@@ -123,25 +147,28 @@ public class Character {
 
 	private final float MAX_VELOCITY = 3;
 	private final float ACCELERATION = 0.15f;
+	private boolean direction, directionJustChanged;
 
 	/**
 	 * All the update logic for the game (no drawing stuff)
 	 */
 	public void update(float delta) {
-		if (Gdx.input.isKeyPressed(characterController.getLeftKey())
-				&& canMoveLeft() && body.getLinearVelocity().x > -MAX_VELOCITY) {
-			body.applyLinearImpulse(-ACCELERATION, 0, body.getPosition().x,
-					body.getPosition().y, true);
+		//move left
+		if (Gdx.input.isKeyPressed(characterController.getLeftKey()) && canMoveLeft() && body.getLinearVelocity().x > -MAX_VELOCITY) {
+			body.applyLinearImpulse(-ACCELERATION, 0, body.getPosition().x, body.getPosition().y, true);
+			direction = true;
+			directionJustChanged = true;
 			if (body.getLinearVelocity().y == 0)
 				aniState = AnimationState.IDLE_LEFT;
 			else
 				aniState = AnimationState.JUMP_LEFT;
 		}
 
-		if (Gdx.input.isKeyPressed(characterController.getRightKey())
-				&& canMoveRight() && body.getLinearVelocity().x < MAX_VELOCITY) {
-			body.applyLinearImpulse(ACCELERATION, 0, body.getPosition().x,
-					body.getPosition().y, true);
+		//move right
+		if (Gdx.input.isKeyPressed(characterController.getRightKey()) && canMoveRight() && body.getLinearVelocity().x < MAX_VELOCITY) {
+			body.applyLinearImpulse(ACCELERATION, 0, body.getPosition().x, body.getPosition().y, true);
+			direction = false;
+			directionJustChanged = true;
 			if (body.getLinearVelocity().y == 0)
 				aniState = AnimationState.IDLE_RIGHT;
 			else
@@ -173,6 +200,17 @@ public class Character {
 		if (Gdx.input.isKeyJustPressed(characterController.getFallKey())
 				&& !canJump()) {
 			body.applyForceToCenter(new Vector2(0.0f, -100f), true);
+		}
+		
+		if(directionJustChanged) {
+			if(direction){
+				body.destroyFixture(fixture);
+				body.createFixture(fixtureDefLeft);
+			}else {
+				body.destroyFixture(fixture);
+				body.createFixture(fixtureDefRight);
+			}
+			directionJustChanged = false;
 		}
 
 		// if (Gdx.input.isKeyJustPressed(characterController.getFireKey()))

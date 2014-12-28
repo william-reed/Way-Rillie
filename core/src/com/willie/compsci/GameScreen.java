@@ -45,13 +45,14 @@ public class GameScreen implements Screen
 
 		initBox();
 		// create characters at opposite ends of screen
-		float[] duckVertices = new float[]{0, 15, 0, 28, 26, 64, 40, 64, 64, 28, 64, 15, 32, 0};
-		duck = new Character(100, 125, 10, true, new Texture("duckSheet.png"), new CharacterController(Keys.W, Keys.A, Keys.D, Keys.S, Keys.SHIFT_LEFT), world, duckVertices);
+		float[] duckVerticesLeft = new float[]{0, 15, 0, 28, 26, 64, 40, 64, 50, 33, 50, 14, 32, 0};
+		float[] duckVerticesRight = new float[]{14, 14, 14, 33, 26, 64, 40, 64, 64, 28, 64, 15, 32, 0};
+		duck = new Character(100, 125, 10, true, new Texture("duckSheet.png"), new CharacterController(Keys.W, Keys.A, Keys.D, Keys.S, Keys.SHIFT_LEFT), world, duckVerticesLeft, duckVerticesRight);
 		float[] mojoVertices = new float[]{0, 0, 0, 64, 64, 64, 64, 0};
-		mojo = new Character(700, 125, 10, false, new Texture("mojoSheet.png"), new CharacterController(Keys.UP, Keys.LEFT, Keys.RIGHT, Keys.DOWN, Keys.CONTROL_RIGHT), world, mojoVertices);
-		characters = new Character[2];
+		//mojo = new Character(700, 125, 10, false, new Texture("mojoSheet.png"), new CharacterController(Keys.UP, Keys.LEFT, Keys.RIGHT, Keys.DOWN, Keys.CONTROL_RIGHT), world, mojoVertices);
+		characters = new Character[1];
 		characters[0] = duck;
-		characters[1] = mojo;
+		//characters[1] = mojo;
 
 		// create spritebatch and camera
 		batch = new SpriteBatch();
